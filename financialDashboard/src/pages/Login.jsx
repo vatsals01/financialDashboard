@@ -1,7 +1,6 @@
 import { useForm } from "react-hook-form";
 import { useState } from "react";
 import axios from 'axios'
-import { useEffect } from "react";
 const API_URL = import.meta.env.VITE_API_URL;
 const AuthPage = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -17,12 +16,6 @@ const AuthPage = () => {
 
   const password = watch("password");
 
-  useEffect(()=>{
-    setTimeout(()=>{
-      setMessage('');
-    },1000)
-  },[message]);
-
   const onSubmit = (data) => {
     console.log(`${API_URL}`);
     if (isLogin) {
@@ -30,7 +23,11 @@ const AuthPage = () => {
       alert("Logged in successfully");
     } else {
       axios.post(`${API_URL}/api/register`,data)
-      .then((result)=>{setMessage("Registration Successful");setInterval(()=>{setIsLogin(true)},1000)})
+      .then((result)=>{
+        setIsError(false);
+        setMessage("Registration Successful");
+        setInterval(()=>{setIsLogin(true); setMessage('')},1000)}
+      )
       .catch((error) => {
         setIsLogin(false);
         if(error.response.data.error.includes('E11000')){
