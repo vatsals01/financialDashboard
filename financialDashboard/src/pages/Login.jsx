@@ -17,7 +17,7 @@ const AuthPage = () => {
   const password = watch("password");
 
   const onSubmit = (data) => {
-    console.log(`${API_URL}`);
+    debugger;
     if (isLogin) {
       console.log("Login Data:", data);
       alert("Logged in successfully");
@@ -26,7 +26,7 @@ const AuthPage = () => {
       .then((result)=>{
         setIsError(false);
         setMessage("Registration Successful");
-        setInterval(()=>{setIsLogin(true); setMessage('')},1000)}
+        setTimeout(()=>{setMessage(''); setIsLogin(true)},1000)}
       )
       .catch((error) => {
         setIsLogin(false);
