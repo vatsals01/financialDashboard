@@ -1,9 +1,7 @@
 import { useForm } from "react-hook-form";
-import { useState } from "react";
-import axios from 'axios'
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-const API_URL = import.meta.env.VITE_API_URL;
+import api from '../utils/api';
 const AuthPage = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [message, setMessage] = useState('');
@@ -31,31 +29,31 @@ const AuthPage = () => {
 
   const onSubmit = (data) => {
     if (isLogin) {
-      axios.get(`${API_URL}/api/login`,{
-        params:{email: data.email, password: data.password}
-      })
-      .then((result)=>{
+      api.post('/api/login', { email: data.email, password: data.password })
+      .then((result) => {
+        localStorage.setItem('token', result.data.token);
         setIsError(false);
         setMessage("User logged in successfully");
-        setInterval(()=>{navigate("/home"),2000});
+        setTimeout(() => navigate("/home"), 1000);
       })
-      .catch((error)=>{
+      .catch((error) => {
         setIsError(true);
-        setMessage(error.response.data.message);
-      })
+        setMessage(error.response?.data?.message || 'Login failed');
+      });
     } else {
-      axios.post(`${API_URL}/api/register`,data)
-      .then((result)=>{
+      api.post('/api/register', data)
+      .then((result) => {
+        localStorage.setItem('token', result.data.token);
         setIsError(false);
         setMessage("Registration Successful");
-        setInterval(()=>{setIsLogin(true)},2000)}
-      )
+        setTimeout(() => { setIsLogin(true); reset(); }, 1500);
+      })
       .catch((error) => {
         setIsLogin(false);
-        setMessage(error.response.data.message);
+        setMessage(error.response?.data?.message || 'Registration failed');
         setIsError(true);
         reset();
-      });  
+      });
     }
     reset();
   };
